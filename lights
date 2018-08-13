@@ -1,0 +1,23 @@
+#! /bin/bash
+
+if [ $1 -eq 0 ]; then
+    # stop the server
+	sudo systemctl stop hyperion
+
+    # spam the Arduino serial port with the "off code" (hYP) and a checksum it expects
+	for x in `seq 1 75`; do
+        echo -n -e "hYP\x00\x60\x35" > /dev/ttyACM0
+	done
+elif [ $1 -eq 1 ]; then
+    # spam the Arduino serial port with the "on code" (Hyp) and a checksum it expects
+	for x in `seq 1 75`; do
+		echo -n -e "Hyp\x00\x60\x35" > /dev/ttyACM0
+	done
+
+    # start the server
+	sudo systemctl start hyperion
+	sleep 3
+    # set a pleasing default effect
+	hyperion-remote -e "Full color mood blobs" -p 50
+
+fi
